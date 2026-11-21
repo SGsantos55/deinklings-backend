@@ -24,7 +24,7 @@ Response `200`: `{ accessToken, user }` — see `User` shape below.
 Create the user with a hashed password, a role, and a JWT (e.g. `PyJWT`) whose
 `sub` claim is the user id.
 
-### `POST /api/auth/login`
+### `POST sd`
 Request: `{ email, password }` → Response: `{ accessToken, user }`.
 
 ### `GET /api/auth/me` (auth required)

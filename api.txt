@@ -1,0 +1,3 @@
+POST /api/auth/signup — "Create my account" → returns a token + my user info
+POST /api/auth/login — "I already have an account, here's my password" → returns a token + my user info
+GET /api/auth/me — "Here's my token, who am I?" → returns my user info (this is how the frontend knows if you're still logged in)

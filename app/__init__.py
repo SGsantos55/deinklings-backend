@@ -30,11 +30,13 @@ def create_app(config=None):
     )
 
     from app import models  # noqa: F401
+    from app.adaptation_requests.routes import bp as requests_bp
     from app.auth.routes import bp as auth_bp
     from app.listings.routes import bp as listings_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(listings_bp)
+    app.register_blueprint(requests_bp)
 
     @app.errorhandler(HTTPException)
     def handle_http(err):

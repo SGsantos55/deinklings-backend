@@ -106,3 +106,53 @@ class Listing(db.Model):
             "coverUrl": self.cover_url,
             "createdAt": _iso(self.created_at),
         }
+
+
+class AdaptationRequest(db.Model):
+    __tablename__ = "adaptation_requests"
+
+    id = db.Column(
+        db.Uuid, primary_key=True, default=uuid.uuid4, server_default=text("gen_random_uuid()")
+    )
+    listing_id = db.Column(
+        db.Uuid, db.ForeignKey("listings.id", ondelete="CASCADE"), nullable=False
+    )
+    requester_id = db.Column(
+        db.Uuid, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    owner_id = db.Column(db.Uuid, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    medium = db.Column(db.Text, nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    status = db.Column(db.Text, nullable=False, default="pending", server_default="pending")
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        server_default=text("now()"),
+    )
+    responded_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    listing = db.relationship("Listing", lazy="joined")
+    requester = db.relationship("User", foreign_keys=[requester_id], lazy="joined")
+    owner = db.relationship("User", foreign_keys=[owner_id], lazy="joined")
+
+    __table_args__ = (
+        db.Index("adaptation_requests_owner_id_idx", "owner_id"),
+        db.Index("adaptation_requests_requester_id_idx", "requester_id"),
+    )
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "listingId": str(self.listing_id),
+            "listingTitle": self.listing.title,
+            "requesterId": str(self.requester_id),
+            "requesterName": self.requester.display_name,
+            "ownerId": str(self.owner_id),
+            "ownerName": self.owner.display_name,
+            "medium": self.medium,
+            "message": self.message,
+            "status": self.status,
+            "createdAt": _iso(self.created_at),
+            "respondedAt": _iso(self.responded_at) if self.responded_at else None,
+        }
